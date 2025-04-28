@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    private static PlayerMovement instance;
 
     public int walkingSFXIndex = 3;
     public int jumpingSFXIndex = 2;
@@ -17,10 +18,21 @@ public class PlayerMovement : MonoBehaviour
 
     Rigidbody2D rb;
     Animator animator;
-    // Start is called before the first frame update
+
     void Start()
     {
         volumeControler = FindObjectOfType<VolumeControler>();
+
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
 
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();

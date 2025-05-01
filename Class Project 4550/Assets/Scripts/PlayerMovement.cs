@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    private static PlayerMovement instance;
-
     public int walkingSFXIndex = 3;
     public int jumpingSFXIndex = 2;
 
@@ -16,43 +14,38 @@ public class PlayerMovement : MonoBehaviour
     float jumpPower = 9f;
     bool isGrounded = false;
 
+    public Transform groundCheck;
+    public float groundCheckRadius = 0.2f;
+    public LayerMask groundLayer;
+
     Rigidbody2D rb;
     Animator animator;
 
     void Start()
     {
         volumeControler = FindObjectOfType<VolumeControler>();
-
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
-
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        DontDestroyOnLoad(gameObject);
     }
 
-    // Update is called once per frame
     void Update()
     {
+        // NEW ground detection system
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+        animator.SetBool("isJumping", !isGrounded);
+
         horizontalInput = Input.GetAxis("Horizontal");
-
         FlipSprite();
-
 
         if (horizontalInput != 0f && isGrounded)
         {
-            if(!volumeControler.sfxSources[walkingSFXIndex].isPlaying)
+            if (!volumeControler.sfxSources[walkingSFXIndex].isPlaying)
             {
                 volumeControler.sfxSources[walkingSFXIndex].Play();
             }
-        } else if (horizontalInput == 0f && isGrounded)
+        }
+        else if (horizontalInput == 0f && isGrounded)
         {
             if (volumeControler.sfxSources[walkingSFXIndex].isPlaying)
             {
@@ -60,13 +53,12 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        if(!isGrounded && volumeControler.sfxSources[walkingSFXIndex].isPlaying)
+        if (!isGrounded && volumeControler.sfxSources[walkingSFXIndex].isPlaying)
         {
             volumeControler.sfxSources[walkingSFXIndex].Stop();
         }
 
-
-        if(Input.GetButtonDown("Jump") && isGrounded)
+        if (Input.GetButtonDown("Jump") && isGrounded)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpPower);
             isGrounded = false;
@@ -74,7 +66,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (volumeControler.sfxSources[walkingSFXIndex].isPlaying)
             {
-            volumeControler.sfxSources[walkingSFXIndex].Stop();
+                volumeControler.sfxSources[walkingSFXIndex].Stop();
             }
 
             volumeControler.PlaySFX(jumpingSFXIndex);
@@ -90,7 +82,7 @@ public class PlayerMovement : MonoBehaviour
 
     void FlipSprite()
     {
-        if(isFacingRight && horizontalInput < 0f || !isFacingRight && horizontalInput > 0f)
+        if (isFacingRight && horizontalInput < 0f || !isFacingRight && horizontalInput > 0f)
         {
             isFacingRight = !isFacingRight;
             Vector3 ls = transform.localScale;
@@ -99,9 +91,13 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    // Debug circle in scene view
+    private void OnDrawGizmosSelected()
     {
-        isGrounded = true;
-        animator.SetBool("isJumping", !isGrounded);
+        if (groundCheck != null)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+        }
     }
 }

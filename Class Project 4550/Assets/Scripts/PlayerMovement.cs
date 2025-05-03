@@ -21,8 +21,25 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody2D rb;
     Animator animator;
 
+    void Awake()
+    {
+        if (animator == null)
+            animator = GetComponent<Animator>();
+
+        if (rb == null)
+            rb = GetComponent<Rigidbody2D>();
+
+        if (volumeControler == null)
+            volumeControler = FindObjectOfType<VolumeControler>();
+    }
+
     void Start()
     {
+        if (groundCheck == null) Debug.LogError("groundCheck is null");
+        if (animator == null) Debug.LogError("animator is null");
+        if (volumeControler == null) Debug.LogError("volumeControler is null");
+        if (rb == null) Debug.LogError("Rigidbody2D (rb) is null");
+
         volumeControler = FindObjectOfType<VolumeControler>();
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();

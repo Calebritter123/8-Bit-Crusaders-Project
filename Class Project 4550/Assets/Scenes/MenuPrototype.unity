@@ -554,6 +554,8 @@ MonoBehaviour:
   bgmSource: {fileID: 523457811}
   sfxSources:
   - {fileID: 1833468686}
+  gameMusic: {fileID: 0}
+  menuMusic: {fileID: 8300000, guid: ad80608a55017a2408802c6fb3ffc349, type: 3}
 --- !u!1 &175315377
 GameObject:
   m_ObjectHideFlags: 0

@@ -40,7 +40,11 @@ public class Menu : MonoBehaviour
     public void BackToGame()
     {
         CloseOptions();
-        isPaused = false;
+    }
+
+    public void ReturnToMenu()
+    {
+        SceneManager.LoadScene("MenuPrototype");
     }
 
     void Update()

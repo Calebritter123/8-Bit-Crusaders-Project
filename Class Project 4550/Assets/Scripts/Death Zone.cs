@@ -1,7 +1,10 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class DeathZone : MonoBehaviour
 {
+    public int deathSFXIndex = 4;
+    public UnityEvent<int> onDeathTriggered;
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
@@ -13,7 +16,11 @@ public class DeathZone : MonoBehaviour
             {
                 int damage = healthSystem.maxHealth / 4; // Deal 1/4 of max health
                 healthSystem.TakeDamage(damage);
+
+                onDeathTriggered?.Invoke(deathSFXIndex);
             }
+
+
 
             if (respawn != null)
             {

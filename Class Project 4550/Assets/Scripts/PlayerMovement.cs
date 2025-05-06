@@ -21,25 +21,8 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody2D rb;
     Animator animator;
 
-    void Awake()
-    {
-        if (animator == null)
-            animator = GetComponent<Animator>();
-
-        if (rb == null)
-            rb = GetComponent<Rigidbody2D>();
-
-        if (volumeControler == null)
-            volumeControler = FindObjectOfType<VolumeControler>();
-    }
-
     void Start()
     {
-        if (groundCheck == null) Debug.LogError("groundCheck is null");
-        if (animator == null) Debug.LogError("animator is null");
-        if (volumeControler == null) Debug.LogError("volumeControler is null");
-        if (rb == null) Debug.LogError("Rigidbody2D (rb) is null");
-
         volumeControler = FindObjectOfType<VolumeControler>();
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
@@ -48,12 +31,17 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        // NEW ground detection system
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
         animator.SetBool("isJumping", !isGrounded);
 
         horizontalInput = Input.GetAxis("Horizontal");
         FlipSprite();
+
+        // Attack trigger on left mouse click
+        if (Input.GetMouseButtonDown(0)) // 0 = left mouse button
+        {
+            animator.SetTrigger("Attack");
+        }
 
         if (horizontalInput != 0f && isGrounded)
         {
@@ -108,7 +96,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    // Debug circle in scene view
     private void OnDrawGizmosSelected()
     {
         if (groundCheck != null)

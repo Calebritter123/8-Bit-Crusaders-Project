@@ -7,7 +7,7 @@ public class HealthSystems : MonoBehaviour
     public int maxHealth = 100;
     private int currentHealth;
 
-    [SerializeField] private HealthBar healthBar; // HealthBar reference
+    [SerializeField] private HealthBar healthBar;
 
     private bool iframeActive;
     private float iframeDuration = 0.5f;
@@ -15,29 +15,37 @@ public class HealthSystems : MonoBehaviour
     private PlayerRespawn respawnSystem;
     private GameOver gameOver;
 
+    [Header("Knockback Settings")]
+    public float knockbackForce = 10f;
+    public float knockbackDuration = 0.2f;
+    private Rigidbody2D rb;
+    private PlayerMovement movementScript;
+
     private void Start()
     {
         currentHealth = maxHealth;
 
         if (healthBar != null)
         {
-            healthBar.SetMaxHealth(maxHealth); // Initialize UI health bar
+            healthBar.SetMaxHealth(maxHealth);
         }
 
-        respawnSystem = GetComponent<PlayerRespawn>(); // Get reference to PlayerRespawn
+        rb = GetComponent<Rigidbody2D>();
+        movementScript = GetComponent<PlayerMovement>();
+        respawnSystem = GetComponent<PlayerRespawn>();
         gameOver = FindObjectOfType<GameOver>();
     }
 
     public void TakeDamage(int damage)
     {
-        if (iframeActive) return; // Prevent taking damage during iFrames
+        if (iframeActive) return;
 
         currentHealth -= damage;
-        if (currentHealth < 0) currentHealth = 0; // Prevent negative health
+        if (currentHealth < 0) currentHealth = 0;
 
         if (healthBar != null)
         {
-            healthBar.SetHealth(currentHealth); // Update health bar
+            healthBar.SetHealth(currentHealth);
         }
 
         if (currentHealth <= 0)
@@ -47,15 +55,19 @@ public class HealthSystems : MonoBehaviour
         else
         {
             StartCoroutine(iFrame());
+            StartCoroutine(ApplyKnockback());
         }
     }
 
-    private void Die() {
-        if (gameOver != null){
+    private void Die()
+    {
+        if (gameOver != null)
+        {
             gameOver.ShowGameOver();
             Debug.Log("Calling ShowGameOver!");
         }
-        else{
+        else
+        {
             Debug.LogError("GameOver script not found in scene.");
         }
     }
@@ -67,15 +79,29 @@ public class HealthSystems : MonoBehaviour
         iframeActive = false;
     }
 
+    IEnumerator ApplyKnockback()
+    {
+        if (rb != null)
+        {
+            // Determine knockback direction (based on facing)
+            float direction = movementScript != null && movementScript.transform.localScale.x < 0 ? 1f : -1f;
+            rb.velocity = Vector2.zero; // Reset velocity
+            rb.AddForce(new Vector2(direction * knockbackForce, knockbackForce / 2), ForceMode2D.Impulse);
+        }
+
+        yield return new WaitForSeconds(knockbackDuration);
+    }
+
     void Respawn()
     {
         if (respawnSystem != null)
         {
-            transform.position = PlayerRespawn.lastCheckpoint; // Move to last checkpoint
-            currentHealth = maxHealth; // Restore full health
+            transform.position = PlayerRespawn.lastCheckpoint;
+            currentHealth = maxHealth;
 
-            if (healthBar != null) {
-                healthBar.SetHealth(currentHealth); // Update health bar
+            if (healthBar != null)
+            {
+                healthBar.SetHealth(currentHealth);
             }
         }
         else

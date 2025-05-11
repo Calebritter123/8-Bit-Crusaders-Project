@@ -16,6 +16,7 @@ public class Menu : MonoBehaviour
         Application.Quit();
     }
 
+    public static bool IsGamePaused {get; private set; }
     public GameObject optionsPanel;
     public GameObject optionsButton;
     private bool isPaused = false;
@@ -25,7 +26,7 @@ public class Menu : MonoBehaviour
         optionsButton.SetActive(false);
         optionsPanel.SetActive(true);
         Time.timeScale = 0f;
-        isPaused = true;
+        IsGamePaused = true;
     }
 
 
@@ -34,7 +35,7 @@ public class Menu : MonoBehaviour
         optionsButton.SetActive(true);
         optionsPanel.SetActive(false);
         Time.timeScale = 1f;
-        isPaused = false;
+        IsGamePaused = false;
     }
 
     public void BackToGame()

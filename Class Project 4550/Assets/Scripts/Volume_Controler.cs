@@ -18,8 +18,9 @@ public class VolumeControler : MonoBehaviour
 
     void Start()
     {
-        volumeSlider.value = bgmSource.volume;
-
+        volumeSlider.value = PlayerPrefs.GetFloat("BGMVolume", 1f);
+        sfxSlider.value = PlayerPrefs.GetFloat("SFXVolume", 1f);
+        
         if (sfxSources.Count > 0)
         {
             sfxSource = sfxSources[0]; // Assign first SFX source
@@ -32,6 +33,22 @@ public class VolumeControler : MonoBehaviour
 
         Debug.Log("Initial volume: " + bgmSource.volume);
         if (sfxSource != null) Debug.Log("Initial SFX volume: " + sfxSource.volume);
+
+        if (PlayerPrefs.HasKey("BGMVolume"))
+        {
+            bgmSource.volume = PlayerPrefs.GetFloat("BGMVolume");
+            volumeSlider.value = bgmSource.volume;
+        }
+
+        if (PlayerPrefs.HasKey("SFXVolume"))
+        {
+            float SFXVolume = PlayerPrefs.GetFloat("SFXVolume");
+            foreach (AudioSource sfx in sfxSources)
+            {
+                sfx.volume = SFXVolume;
+            }
+            sfxSlider.value = SFXVolume;
+        }
     }
 
     public void ChangeVolume(float volume)

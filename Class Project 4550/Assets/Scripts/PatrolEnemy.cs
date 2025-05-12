@@ -3,72 +3,80 @@ using UnityEngine;
 public class EnemyPatrol : MonoBehaviour
 {
     [Header("Patrol Points")]
-    [SerializeField] private Transform leftEdge;
-    [SerializeField] private Transform rightEdge;
+    public Transform leftEdge;
+    public Transform rightEdge;
 
-    [Header("Enemy")]
-    [SerializeField] private Transform enemy;
+    [Header("Child object with sprite & animator")]
+    public Transform enemy; // Assign your visible child object here (e.g., "MeleeEnemy")
 
     [Header("Movement parameters")]
-    [SerializeField] private float speed;
-    private Vector3 initScale;
-    private bool movingLeft;
+    public float speed = 2.5f;
+    private bool movingLeft = true;
 
     [Header("Idle Behaviour")]
-    [SerializeField] private float idleDuration;
+    public float idleDuration = 1f;
     private float idleTimer;
 
-    [Header("Enemy Animator")]
-    [SerializeField] private Animator anim;
+    [Header("Animator")]
+    private Animator anim;
+
+    private Vector3 initScale;
 
     private void Awake()
     {
-        initScale = enemy.localScale;
-    }
-    private void OnDisable()
-    {
-        anim.SetBool("moving", false);
+        if (enemy != null)
+        {
+            anim = enemy.GetComponent<Animator>();
+            initScale = enemy.localScale;
+        }
+        else
+        {
+            Debug.LogError("Enemy (child with sprite & animator) is not assigned!");
+        }
     }
 
     private void Update()
     {
+        if (enemy == null || anim == null)
+            return;
+
         if (movingLeft)
         {
-            if (enemy.position.x >= leftEdge.position.x)
+            if (enemy.position.x > leftEdge.position.x)
                 MoveInDirection(-1);
             else
-                DirectionChange();
+                StartIdle();
         }
         else
         {
-            if (enemy.position.x <= rightEdge.position.x)
+            if (enemy.position.x < rightEdge.position.x)
                 MoveInDirection(1);
             else
-                DirectionChange();
+                StartIdle();
         }
     }
 
-    private void DirectionChange()
+    private void StartIdle()
     {
         anim.SetBool("moving", false);
         idleTimer += Time.deltaTime;
 
-        if (idleTimer > idleDuration)
+        if (idleTimer >= idleDuration)
+        {
             movingLeft = !movingLeft;
+            idleTimer = 0;
+        }
     }
 
-    private void MoveInDirection(int _direction)
+    private void MoveInDirection(int direction)
     {
+        anim.SetBool("moving", true);
         idleTimer = 0;
-        // Animation
-        // anim.SetBool("moving", true);
 
-        //Make enemy face direction
-        enemy.localScale = new Vector3(Mathf.Abs(initScale.x) * _direction,
-            initScale.y, initScale.z);
+        // Move the enemy sprite
+        enemy.Translate(Vector2.right * direction * speed * Time.deltaTime);
 
-        //Move in that direction
-        enemy.position = new Vector3(enemy.position.x + Time.deltaTime * _direction * speed,
-            enemy.position.y, enemy.position.z);
+        // Flip the sprite visually
+        enemy.localScale = new Vector3(Mathf.Abs(initScale.x) * direction, initScale.y, initScale.z);
     }
 }

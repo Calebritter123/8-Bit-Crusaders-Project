@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -23,33 +23,28 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody2D rb;
     Animator animator;
 
+    public bool isBlocking { get; private set; } = false;
+
+    void Awake()
+    {
+        DontDestroyOnLoad(gameObject); // ✅ Make player persist between scenes
+    }
+
     void Start()
     {
         volumeControler = FindObjectOfType<VolumeControler>();
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        // DontDestroyOnLoad(gameObject);
-
-        if (SceneManager.GetActiveScene().buildIndex != 1)
-        {
-            gameObject.SetActive(false);
-        }
     }
 
     void Update()
     {
-
-        if (SceneManager.GetActiveScene().buildIndex != 1 || Menu.IsGamePaused)
+        if (Menu.IsGamePaused)
         {
             if (volumeControler.sfxSources[walkingSFXIndex].isPlaying)
-            {
                 volumeControler.sfxSources[walkingSFXIndex].Stop();
-            }
             return;
         }
-
-        if (Menu.IsGamePaused)
-        return;
 
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
         animator.SetBool("isJumping", !isGrounded);
@@ -57,33 +52,18 @@ public class PlayerMovement : MonoBehaviour
         horizontalInput = Input.GetAxis("Horizontal");
         FlipSprite();
 
-        // Attack trigger on left mouse click
-        if (Input.GetMouseButtonDown(0) && isGrounded) // 0 = left mouse button
+        // ✅ Blocking input (allowed in air or ground)
+        isBlocking = Input.GetMouseButton(1);
+        animator.SetBool("IsBlocking", isBlocking);
+
+        // ✅ Attack input (only if not blocking)
+        if (Input.GetMouseButtonDown(0) && !isBlocking)
         {
             animator.SetTrigger("Attack");
             volumeControler.PlaySFX(attackSFXIndex);
         }
 
-        if (horizontalInput != 0f && isGrounded)
-        {
-            if (!volumeControler.sfxSources[walkingSFXIndex].isPlaying)
-            {
-                volumeControler.sfxSources[walkingSFXIndex].Play();
-            }
-        }
-        else if (horizontalInput == 0f && isGrounded)
-        {
-            if (volumeControler.sfxSources[walkingSFXIndex].isPlaying)
-            {
-                volumeControler.sfxSources[walkingSFXIndex].Stop();
-            }
-        }
-
-        if (!isGrounded && volumeControler.sfxSources[walkingSFXIndex].isPlaying)
-        {
-            volumeControler.sfxSources[walkingSFXIndex].Stop();
-        }
-
+        // ✅ Jump input (even while blocking)
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpPower);
@@ -91,18 +71,37 @@ public class PlayerMovement : MonoBehaviour
             animator.SetBool("isJumping", !isGrounded);
 
             if (volumeControler.sfxSources[walkingSFXIndex].isPlaying)
-            {
                 volumeControler.sfxSources[walkingSFXIndex].Stop();
-            }
 
             volumeControler.PlaySFX(jumpingSFXIndex);
+        }
+
+        // ✅ Walking SFX logic
+        if (horizontalInput != 0f && isGrounded && !isBlocking)
+        {
+            if (!volumeControler.sfxSources[walkingSFXIndex].isPlaying)
+                volumeControler.sfxSources[walkingSFXIndex].Play();
+        }
+        else
+        {
+            if (volumeControler.sfxSources[walkingSFXIndex].isPlaying)
+                volumeControler.sfxSources[walkingSFXIndex].Stop();
         }
     }
 
     private void FixedUpdate()
     {
-        rb.velocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
-        animator.SetFloat("xVelocity", Math.Abs(rb.velocity.x));
+        // ✅ Freeze movement only while blocking on ground
+        if (isBlocking && isGrounded)
+        {
+            rb.velocity = new Vector2(0f, rb.velocity.y);
+        }
+        else
+        {
+            rb.velocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
+        }
+
+        animator.SetFloat("xVelocity", Mathf.Abs(rb.velocity.x));
         animator.SetFloat("yVelocity", rb.velocity.y);
     }
 

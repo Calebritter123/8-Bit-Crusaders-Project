@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -39,6 +39,13 @@ public class HealthSystems : MonoBehaviour
     public void TakeDamage(int damage)
     {
         if (iframeActive) return;
+
+        // ✅ BLOCKING CHECK
+        if (movementScript != null && movementScript.isBlocking)
+        {
+            Debug.Log("Attack was blocked!");
+            return;
+        }
 
         currentHealth -= damage;
         if (currentHealth < 0) currentHealth = 0;
@@ -83,9 +90,8 @@ public class HealthSystems : MonoBehaviour
     {
         if (rb != null)
         {
-            // Determine knockback direction (based on facing)
             float direction = movementScript != null && movementScript.transform.localScale.x < 0 ? 1f : -1f;
-            rb.velocity = Vector2.zero; // Reset velocity
+            rb.velocity = Vector2.zero;
             rb.AddForce(new Vector2(direction * knockbackForce, knockbackForce / 2), ForceMode2D.Impulse);
         }
 

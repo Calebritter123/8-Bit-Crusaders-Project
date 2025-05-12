@@ -18,11 +18,11 @@ public class MeleeEnemy : MonoBehaviour
     //References
     public HealthSystems healthSystem;
     private EnemyPatrol enemyPatrol;
+    private Animator anim;
 
     private void Awake()
     {
-        // Animations
-        // anim = GetComponent<Animator>();
+        anim = GetComponentInChildren<Animator>();
         enemyPatrol = GetComponentInParent<EnemyPatrol>();
     }
 
@@ -30,15 +30,12 @@ public class MeleeEnemy : MonoBehaviour
     {
         cooldownTimer += Time.deltaTime;
 
-        //Attack only when player in sight?
         if (PlayerInSight())
         {
             if (cooldownTimer >= attackCooldown)
             {
                 cooldownTimer = 0;
-                // Animations
-                // anim.SetTrigger("meleeAttack");
-                DamagePlayer();
+                anim.SetTrigger("attack");
             }
         }
 
@@ -58,6 +55,7 @@ public class MeleeEnemy : MonoBehaviour
 
         return hit.collider != null;
     }
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
@@ -65,7 +63,8 @@ public class MeleeEnemy : MonoBehaviour
             new Vector3(boxCollider.bounds.size.x * range, boxCollider.bounds.size.y, boxCollider.bounds.size.z));
     }
 
-    private void DamagePlayer()
+    // This will be called by the Animation Event in "Enemy_Attack"
+    public void DamagePlayer()
     {
         if (PlayerInSight())
             healthSystem.TakeDamage(damage);

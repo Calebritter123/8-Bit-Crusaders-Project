@@ -4167,9 +4167,8 @@ MonoBehaviour:
   leftEdge: {fileID: 235336432}
   rightEdge: {fileID: 216509816}
   enemy: {fileID: 1483087049}
-  speed: 2.5
+  speed: 2
   idleDuration: 1
-  anim: {fileID: 821435993}
 --- !u!4 &821435992
 Transform:
   m_ObjectHideFlags: 0
@@ -4179,8 +4178,8 @@ Transform:
   m_GameObject: {fileID: 821435990}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7.5, y: -13.37, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 7.5052, y: -13.4014, z: 0}
+  m_LocalScale: {x: 0.9962, y: 1.0327, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1483087049}
@@ -4776,7 +4775,7 @@ Transform:
   m_GameObject: {fileID: 997246899}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -21.89, y: -13.8, z: 0}
+  m_LocalPosition: {x: -10.55, y: -7.42, z: 0}
   m_LocalScale: {x: 1.055383, y: 1.1292413, z: 1.1052628}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4826,7 +4825,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   healthBar: {fileID: 509473636}
-  knockbackForce: 1
+  knockbackForce: 10
   knockbackDuration: 2
 --- !u!114 &997246907
 MonoBehaviour:
@@ -7871,7 +7870,7 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 128
-  healthSystem: {fileID: 0}
+  healthSystem: {fileID: 997246906}
 --- !u!114 &1483087051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7886,7 +7885,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 10
   healthBar: {fileID: 0}
-  knockbackForce: 15
+  knockbackForce: 30
   knockbackDuration: 0.2
 --- !u!61 &1483087052
 BoxCollider2D:
@@ -7976,7 +7975,7 @@ SpriteRenderer:
   m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: 921ce3597a4f98d4eb88b85203ee0f1a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
+  m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 1, y: 2}
@@ -8056,7 +8055,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 1
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!95 &1483087056
 Animator:
   serializedVersion: 5

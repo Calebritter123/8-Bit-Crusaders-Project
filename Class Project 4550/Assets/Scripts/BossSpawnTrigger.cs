@@ -1,8 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BossSpawnTrigger : MonoBehaviour
 {
     public GameObject bossToSpawn;
+    public AudioClip bossMusic; // ✅ Drag your boss music clip here
 
     private bool hasTriggered = false;
 
@@ -18,15 +20,24 @@ public class BossSpawnTrigger : MonoBehaviour
             {
                 bossToSpawn.SetActive(true);
 
-                // Trigger animation
+                // ✅ Trigger the boss spawn animation
                 Animator bossAnimator = bossToSpawn.GetComponent<Animator>();
                 if (bossAnimator != null)
                 {
-                    bossAnimator.SetTrigger("spawn");
+                    bossAnimator.Play("Boss_Spawn", 0, 0f);
                 }
             }
 
-            Destroy(gameObject);
+            // ✅ Play boss music immediately
+            VolumeControler vc = FindObjectOfType<VolumeControler>();
+            if (vc != null && bossMusic != null)
+            {
+                vc.bgmSource.clip = bossMusic;
+                vc.bgmSource.volume = PlayerPrefs.GetFloat("BGMVolume", 1f);
+                vc.bgmSource.Play();
+            }
+
+            Destroy(gameObject); // Remove the trigger after use
         }
     }
 }

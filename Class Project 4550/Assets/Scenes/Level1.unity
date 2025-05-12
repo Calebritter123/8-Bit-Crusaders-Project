@@ -3292,8 +3292,10 @@ MonoBehaviour:
   - {fileID: 1236526255}
   - {fileID: 45378997}
   - {fileID: 1954922829}
-  gameMusic: {fileID: 8300000, guid: 3e7823c9df8bf5e47ad59d82f7563700, type: 3}
   menuMusic: {fileID: 0}
+  gameMusic: {fileID: 8300000, guid: 3e7823c9df8bf5e47ad59d82f7563700, type: 3}
+  level2Music: {fileID: 8300000, guid: 591df0e60ad45a645a3bbd90000c592c, type: 3}
+  bossMusic: {fileID: 8300000, guid: 4f2f742a370ac0b4ebc6921a2f8ff7b7, type: 3}
 --- !u!1 &598514482
 GameObject:
   m_ObjectHideFlags: 0
@@ -4775,7 +4777,7 @@ Transform:
   m_GameObject: {fileID: 997246899}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 160.1, y: -17.4, z: 0}
+  m_LocalPosition: {x: -20.9, y: -12.59, z: 0}
   m_LocalScale: {x: 1.055383, y: 1.1292413, z: 1.1052628}
   m_ConstrainProportionsScale: 0
   m_Children:

@@ -40,13 +40,17 @@ public class HealthSystems : MonoBehaviour
     {
         if (iframeActive) return;
 
-        // ✅ BLOCKING CHECK
+        // ✅ Always apply knockback, even when blocking
+        StartCoroutine(ApplyKnockback());
+
+        // ❌ Blocked: skip damage
         if (movementScript != null && movementScript.isBlocking)
         {
             Debug.Log("Attack was blocked!");
             return;
         }
 
+        // ✅ Take damage only if not blocking
         currentHealth -= damage;
         if (currentHealth < 0) currentHealth = 0;
 
@@ -62,7 +66,6 @@ public class HealthSystems : MonoBehaviour
         else
         {
             StartCoroutine(iFrame());
-            StartCoroutine(ApplyKnockback());
         }
     }
 
@@ -91,6 +94,7 @@ public class HealthSystems : MonoBehaviour
         if (rb != null)
         {
             float direction = movementScript != null && movementScript.transform.localScale.x < 0 ? 1f : -1f;
+
             rb.velocity = Vector2.zero;
             rb.AddForce(new Vector2(direction * knockbackForce, knockbackForce / 2), ForceMode2D.Impulse);
         }

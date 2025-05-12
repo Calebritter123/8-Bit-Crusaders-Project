@@ -11,28 +11,27 @@ public class VolumeControler : MonoBehaviour
     public AudioSource bgmSource;
     public List<AudioSource> sfxSources = new List<AudioSource>();
 
-    public AudioClip gameMusic;
+    [Header("Music Clips")]
     public AudioClip menuMusic;
+    public AudioClip gameMusic;     // for Level1
+    public AudioClip level2Music;   // for Level2
+    public AudioClip bossMusic;     // for BossArena
 
-    private AudioSource sfxSource; // Single reference for an SFX source
+    private AudioSource sfxSource;
 
     void Start()
     {
         volumeSlider.value = PlayerPrefs.GetFloat("BGMVolume", 1f);
         sfxSlider.value = PlayerPrefs.GetFloat("SFXVolume", 1f);
-        
+
         if (sfxSources.Count > 0)
         {
-            sfxSource = sfxSources[0]; // Assign first SFX source
+            sfxSource = sfxSources[0];
             sfxSlider.value = sfxSource.volume;
         }
 
-
         volumeSlider.onValueChanged.AddListener(ChangeVolume);
         sfxSlider.onValueChanged.AddListener(ChangeSFXVolume);
-
-        Debug.Log("Initial volume: " + bgmSource.volume);
-        if (sfxSource != null) Debug.Log("Initial SFX volume: " + sfxSource.volume);
 
         if (PlayerPrefs.HasKey("BGMVolume"))
         {
@@ -53,16 +52,13 @@ public class VolumeControler : MonoBehaviour
 
     public void ChangeVolume(float volume)
     {
-        Debug.Log("Volume Changed to: " + volume);
         bgmSource.volume = volume;
         PlayerPrefs.SetFloat("BGMVolume", volume);
     }
 
     public void ChangeSFXVolume(float volume)
     {
-        Debug.Log("SFX Volume Changed to: " + volume);
         PlayerPrefs.SetFloat("SFXVolume", volume);
-
         foreach (AudioSource sfx in sfxSources)
         {
             sfx.volume = volume;
@@ -71,7 +67,7 @@ public class VolumeControler : MonoBehaviour
 
     public void PlaySFX(int index)
     {
-        if (index >= 0 && index < sfxSources.Count) // Ensure index is valid
+        if (index >= 0 && index < sfxSources.Count)
         {
             sfxSources[index].Play();
         }
@@ -83,47 +79,49 @@ public class VolumeControler : MonoBehaviour
 
     public void StopBacgroundMusic()
     {
-        if (bgmSource != null){
+        if (bgmSource != null)
+        {
             bgmSource.Stop();
         }
     }
 
-
-
-
-
     void OnEnable()
-{
-    SceneManager.sceneLoaded += OnSceneLoaded;
-}
-
-void OnDisable()
-{
-    SceneManager.sceneLoaded -= OnSceneLoaded;
-}
-
-void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-{
-    if (bgmSource == null) return;
-
-    if (scene.name == "MenuPrototype")
     {
-        if (bgmSource.clip != menuMusic)
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (bgmSource == null) return;
+
+        AudioClip clipToPlay = null;
+
+        switch (scene.name)
         {
-            bgmSource.clip = menuMusic;
+            case "MenuPrototype":
+                clipToPlay = menuMusic;
+                break;
+            case "Level1":
+                clipToPlay = gameMusic;
+                break;
+            case "Level2":
+                clipToPlay = level2Music;
+                break;
+            case "BossArena":
+                clipToPlay = bossMusic;
+                break;
+        }
+
+        if (clipToPlay != null && bgmSource.clip != clipToPlay)
+        {
+            bgmSource.clip = clipToPlay;
             bgmSource.volume = PlayerPrefs.GetFloat("BGMVolume", 1f);
             bgmSource.Play();
         }
     }
-    else if (scene.name == "Level1")
-    {
-        if (bgmSource.clip != gameMusic) // gameMusic must be defined above
-        {
-            bgmSource.clip = gameMusic;
-            bgmSource.volume = PlayerPrefs.GetFloat("BGMVolume", 1f);
-            bgmSource.Play();
-        }
-    }
-}
-
 }
